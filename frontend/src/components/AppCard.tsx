@@ -30,9 +30,14 @@ function formatTimeAgo(dateString: string): string {
 }
 
 export function AppCard({ app }: AppCardProps) {
+  // Construct URL from ports if url is not provided (fallback for old backend responses)
+  const url = app.url || (app.ports.length > 0 
+    ? `http://localhost:${app.ports[app.ports.length - 1]}`
+    : '#');
+
   return (
     <a
-      href={app.url}
+      href={url}
       target="_blank"
       rel="noopener noreferrer"
       className="block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
