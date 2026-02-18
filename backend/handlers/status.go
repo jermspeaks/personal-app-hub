@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -17,6 +18,7 @@ type AppStatus struct {
 	Online      bool      `json:"online"`
 	LastUpdated time.Time `json:"lastUpdated"`
 	Ports       []int     `json:"ports"`
+	URL         string    `json:"url"`
 }
 
 // Status handles GET /api/status
@@ -36,12 +38,20 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		// Get last commit date
 		lastUpdated := services.GetLastCommitDate(app.Path)
 
+		// Determine frontend port (use last port in array, typically the frontend)
+		var frontendPort int
+		if len(app.Ports) > 0 {
+			frontendPort = app.Ports[len(app.Ports)-1]
+		}
+		url := fmt.Sprintf("http://localhost:%d", frontendPort)
+
 		statuses = append(statuses, AppStatus{
 			Name:        app.Name,
 			Description: app.Description,
 			Online:      online,
 			LastUpdated: lastUpdated,
 			Ports:       app.Ports,
+			URL:         url,
 		})
 	}
 

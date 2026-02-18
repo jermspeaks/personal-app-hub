@@ -4,6 +4,7 @@ export interface AppStatus {
   online: boolean;
   lastUpdated: string; // ISO 8601 date string
   ports: number[];
+  url: string;
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8518';

@@ -31,7 +31,12 @@ function formatTimeAgo(dateString: string): string {
 
 export function AppCard({ app }: AppCardProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+    <a
+      href={app.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+    >
       <div className="flex items-start justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           {app.name}
@@ -53,6 +58,6 @@ export function AppCard({ app }: AppCardProps) {
         <span>Last updated: {formatTimeAgo(app.lastUpdated)}</span>
         <span className="text-xs">Ports: {app.ports.join(', ')}</span>
       </div>
-    </div>
+    </a>
   );
 }
