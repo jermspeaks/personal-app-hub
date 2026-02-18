@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,7 +10,51 @@ import (
 	"hub/backend/middleware"
 )
 
+// initLogging configures structured logging based on environment variables.
+// LOG_FORMAT: "json" (default) or "text" for human-readable output
+// LOG_LEVEL: "debug", "info" (default), "warn", or "error"
+func initLogging() {
+	format := os.Getenv("LOG_FORMAT")
+	if format == "" {
+		format = "json" // Default to JSON for production
+	}
+
+	var handler slog.Handler
+	opts := &slog.HandlerOptions{
+		Level: parseLogLevel(os.Getenv("LOG_LEVEL")),
+	}
+
+	switch format {
+	case "text":
+		handler = slog.NewTextHandler(os.Stderr, opts)
+	default:
+		handler = slog.NewJSONHandler(os.Stderr, opts)
+	}
+
+	slog.SetDefault(slog.New(handler))
+}
+
+// parseLogLevel converts a string log level to slog.Level.
+// Returns slog.LevelInfo as default if the level is invalid.
+func parseLogLevel(level string) slog.Level {
+	switch strings.ToLower(level) {
+	case "debug":
+		return slog.LevelDebug
+	case "info":
+		return slog.LevelInfo
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
+}
+
 func main() {
+	// Initialize structured logging before any log calls
+	initLogging()
+
 	mux := http.NewServeMux()
 
 	// Register status endpoint
@@ -29,7 +72,8 @@ func main() {
 
 	slog.Info("server listening", "addr", addr)
 	if err := http.ListenAndServe(addr, handler); err != nil {
-		log.Fatal(err)
+		slog.Error("server failed", "err", err, "addr", addr)
+		os.Exit(1)
 	}
 }
 
