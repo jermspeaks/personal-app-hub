@@ -1,4 +1,4 @@
-import { AppStatus } from '@/api/status';
+import { type AppStatus } from '@/api/status';
 
 interface AppCardProps {
   app: AppStatus;
